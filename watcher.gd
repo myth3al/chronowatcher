@@ -4,21 +4,26 @@ extends CharacterBody2D
 @onready var watcherSprite = $WatcherSprite
 @onready var hitBox = $CollisionShape2D
 
-# Vairables
+# Variables
 var xSpeed = 300
 var ySpeed = 300
-var playing
+var playing = false
 
 func _ready() -> void:
 	watcherSprite.animation = "front"
 	playing = false
 
 func _process(delta: float) -> void:
-	#Animation
+	# Animation
 	if playing:
 		watcherSprite.play()
+	else:
+		watcherSprite.stop()
+		watcherSprite.frame = 0  # Reset to first frame when idle
 	
 func _physics_process(delta: float) -> void:
+	playing = false  # Reset playing status every frame
+	velocity = Vector2.ZERO  # Reset velocity every frame
 	
 	# Movement
 	if Input.is_action_pressed("ui_up"):
@@ -30,16 +35,14 @@ func _physics_process(delta: float) -> void:
 		velocity.y = ySpeed
 		watcherSprite.animation = "front"
 	elif Input.is_action_pressed("ui_left"):
-		print("Sup")
 		playing = true
 		velocity.x = -xSpeed
-		watcherSprite.flip_h()
 		watcherSprite.animation = "side"
+		watcherSprite.flip_h = true  # Flip sprite to face left
 	elif Input.is_action_pressed("ui_right"):
 		playing = true
 		velocity.x = xSpeed
 		watcherSprite.animation = "side"
-	else:
-		velocity = Vector2.ZERO
-		
+		watcherSprite.flip_h = false  # Ensure sprite faces right
+	
 	move_and_slide()
